@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "instructions": ["best-type.md"],
   "mcp": {
     "my-local-mcp-server": {
       "type": "local",

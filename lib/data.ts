@@ -229,6 +229,44 @@ export const mockTransactions: Transaction[] = [
   },
 ];
 
+// Data manipulation functions (for demo purposes)
+// In a real app, these would be API calls
+
+export function addProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Product {
+  const newProduct: Product = {
+    ...product,
+    id: Date.now().toString(36) + Math.random().toString(36).substring(2),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+  mockProducts.push(newProduct);
+  return newProduct;
+}
+
+export function updateProduct(id: string, updates: Partial<Product>): Product | null {
+  const index = mockProducts.findIndex(p => p.id === id);
+  if (index === -1) return null;
+  
+  mockProducts[index] = {
+    ...mockProducts[index],
+    ...updates,
+    updatedAt: new Date(),
+  };
+  return mockProducts[index];
+}
+
+export function deleteProduct(id: string): boolean {
+  const index = mockProducts.findIndex(p => p.id === id);
+  if (index === -1) return false;
+  
+  mockProducts.splice(index, 1);
+  return true;
+}
+
+export function getProductById(id: string): Product | null {
+  return mockProducts.find(p => p.id === id) || null;
+}
+
 export function getMockData() {
   return {
     products: mockProducts,

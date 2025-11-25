@@ -261,15 +261,7 @@ function ExpiryAlertsContent() {
               <ProductCard
                 key={product.id}
                 product={product}
-                onView={(product) => {
-                  console.log('View product:', product);
-                }}
-                onEdit={(product) => {
-                  console.log('Edit product:', product);
-                }}
-                onDelete={(product) => {
-                  console.log('Delete product:', product);
-                }}
+                showActions={true}
               />
             ))}
           </div>

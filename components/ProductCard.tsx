@@ -1,20 +1,36 @@
+'use client';
+
+import { useState } from 'react';
 import type { Product } from '@/lib/types';
 import { Card, CardBody } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Modal } from '@/components/ui/Modal';
 import { ExpiryBadge } from '@/components/ExpiryBadge';
 import { formatCurrency, formatDate, isLowStock } from '@/lib/utils';
+import Link from 'next/link';
 
 interface ProductCardProps {
   product: Product;
   onEdit?: (product: Product) => void;
   onDelete?: (product: Product) => void;
   onView?: (product: Product) => void;
+  showActions?: boolean;
 }
 
-export function ProductCard({ product, onEdit, onDelete, onView }: ProductCardProps) {
+export function ProductCard({ product, onEdit, onDelete, onView, showActions = true }: ProductCardProps) {
   const lowStock = isLowStock(product);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const handleDelete = () => {
+    if (onDelete) {
+      onDelete(product);
+      setShowDeleteModal(false);
+    }
+  };
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <>
+      <Card className="hover:shadow-md transition-shadow">
       <CardBody>
         <div className="flex justify-between items-start mb-3">
           <div className="flex-1">
@@ -58,33 +74,91 @@ export function ProductCard({ product, onEdit, onDelete, onView }: ProductCardPr
           </div>
         )}
 
-        <div className="flex gap-2 pt-3 border-t border-gray-100">
-          {onView && (
-            <button
-              onClick={() => onView(product)}
-              className="flex-1 px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
-            >
-              ดูรายละเอียด
-            </button>
-          )}
-          {onEdit && (
-            <button
-              onClick={() => onEdit(product)}
-              className="flex-1 px-3 py-1.5 text-sm bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              แก้ไข
-            </button>
-          )}
-          {onDelete && (
-            <button
-              onClick={() => onDelete(product)}
-              className="flex-1 px-3 py-1.5 text-sm bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors"
-            >
-              ลบ
-            </button>
-          )}
-        </div>
+        {showActions && (
+          <div className="flex gap-2 pt-3 border-t border-gray-100">
+            {onView ? (
+              <button
+                onClick={() => onView(product)}
+                className="flex-1 px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+              >
+                ดูรายละเอียด
+              </button>
+            ) : (
+              <Link
+                href={`/products/${product.id}`}
+                className="flex-1 px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors text-center"
+              >
+                ดูรายละเอียด
+              </Link>
+            )}
+            {onEdit ? (
+              <button
+                onClick={() => onEdit(product)}
+                className="flex-1 px-3 py-1.5 text-sm bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                แก้ไข
+              </button>
+            ) : (
+              <Link
+                href={`/products/${product.id}/edit`}
+                className="flex-1 px-3 py-1.5 text-sm bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors text-center"
+              >
+                แก้ไข
+              </Link>
+            )}
+            {onDelete && (
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="flex-1 px-3 py-1.5 text-sm bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors"
+              >
+                ลบ
+              </button>
+            )}
+          </div>
+        )}
       </CardBody>
     </Card>
+
+    <Modal
+      isOpen={showDeleteModal}
+      onClose={() => setShowDeleteModal(false)}
+      title="ยืนยันการลบสินค้า"
+      size="sm"
+    >
+      <div className="space-y-4">
+        <div className="text-center">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+            <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">ยืนยันการลบสินค้า</h3>
+          <p className="text-sm text-gray-500">
+            คุณต้องการลบสินค้า &quot;{product.name}&quot; ใช่หรือไม่?
+          </p>
+          <p className="text-xs text-gray-400 mt-1">
+            การดำเนินการนี้ไม่สามารถย้อนกลับได้
+          </p>
+        </div>
+        
+        <div className="flex gap-3 pt-4">
+          <Button
+            variant="outline"
+            className="flex-1"
+            onClick={() => setShowDeleteModal(false)}
+          >
+            ยกเลิก
+          </Button>
+          <Button
+            variant="danger"
+            className="flex-1"
+            onClick={handleDelete}
+          >
+            ลบสินค้า
+          </Button>
+        </div>
+      </div>
+    </Modal>
+    </>
   );
 }

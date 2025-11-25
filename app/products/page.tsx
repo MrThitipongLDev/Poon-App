@@ -207,26 +207,20 @@ export default function ProductsPage() {
           </CardBody>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredAndSortedProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              onView={(product) => {
-                // TODO: Navigate to product detail
-                console.log('View product:', product);
-              }}
-              onEdit={(product) => {
-                // TODO: Navigate to edit product
-                console.log('Edit product:', product);
-              }}
-              onDelete={(product) => {
-                // TODO: Show delete confirmation
-                console.log('Delete product:', product);
-              }}
-            />
-          ))}
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredAndSortedProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                showActions={true}
+                onDelete={(product) => {
+                  console.log('Delete product:', product.id);
+                  // In a real app, this would call an API to delete the product
+                  // For now, just log the action
+                }}
+              />
+            ))}
+          </div>
       )}
     </div>
   );

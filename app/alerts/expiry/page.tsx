@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ProductCard } from '@/components/ProductCard';
 import { Button } from '@/components/ui/Button';
@@ -9,7 +9,7 @@ import { getMockData } from '@/lib/data';
 import { getProductsExpiringSoon, getExpiredProducts, formatCurrency, formatDate } from '@/lib/utils';
 import Link from 'next/link';
 
-export default function ExpiryAlertsPage() {
+function ExpiryAlertsContent() {
   const searchParams = useSearchParams();
   const statusFilter = searchParams.get('status') || 'all';
   const { products } = getMockData();
@@ -276,5 +276,13 @@ export default function ExpiryAlertsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ExpiryAlertsPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center h-64">กำลังโหลด...</div>}>
+      <ExpiryAlertsContent />
+    </Suspense>
   );
 }
